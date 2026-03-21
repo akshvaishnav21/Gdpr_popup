@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GDPR Cookie Handler</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <img src="icons/icon48.svg" alt="Cookie icon" class="header-icon">
+      <div class="header-text">
+        <h1>GDPR Cookie Handler</h1>
+        <p class="subtitle">Auto-dismiss cookie consent popups</p>
+      </div>
+    </header>
+
+    <main>
+      <p class="section-label">Your default preference:</p>
+
+      <div class="options">
+        <label class="option-card" id="card-reject_all">
+          <input type="radio" name="preference" value="reject_all">
+          <div class="option-content">
+            <div class="option-title">
+              <span>Reject All</span>
+              <span class="badge badge-recommended">Recommended</span>
+            </div>
+            <span class="option-desc">Block non-essential cookies for maximum privacy</span>
+          </div>
+        </label>
+
+        <label class="option-card" id="card-necessary_only">
+          <input type="radio" name="preference" value="necessary_only">
+          <div class="option-content">
+            <div class="option-title">
+              <span>Necessary Only</span>
+            </div>
+            <span class="option-desc">Allow only cookies required for the site to work</span>
+          </div>
+        </label>
+
+        <label class="option-card" id="card-accept_all">
+          <input type="radio" name="preference" value="accept_all">
+          <div class="option-content">
+            <div class="option-title">
+              <span>Accept All</span>
+            </div>
+            <span class="option-desc">Allow all cookies including tracking and analytics</span>
+          </div>
+        </label>
+      </div>
+
+      <button id="save-btn">Save Preference</button>
+      <p id="status-msg" class="status-msg" aria-live="polite"></p>
+    </main>
+
+    <footer>
+      <p>Applies automatically on all websites you visit.</p>
+    </footer>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
