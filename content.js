@@ -333,14 +333,19 @@ function initObserver(preference) {
 // Section 8: Entry point
 // ---------------------------------------------------------------------------
 
-// Avoid re-running if we already handled consent in this page session
-if (!sessionStorage.getItem('gdpr_handler_done')) {
+// Avoid re-running if we already handled consent in this page session.
+// Key is namespaced with the extension ID so a page cannot pre-set it to
+// suppress the extension (S4).
+const FLAG_KEY = `gdpr_handler_done_${chrome.runtime.id}`;
+const VALID_PREFS = ['reject_all', 'necessary_only', 'accept_all'];
+
+if (!sessionStorage.getItem(FLAG_KEY)) {
   chrome.storage.sync.get('preference', (data) => {
-    const preference = data.preference;
-    if (!preference) return; // User hasn't set a preference yet
+    // Validate preference against the allowed enum before using it (S3).
+    const preference = VALID_PREFS.includes(data.preference) ? data.preference : 'reject_all';
 
     // Mark as handled to prevent duplicate runs
-    const markHandled = () => sessionStorage.setItem('gdpr_handler_done', '1');
+    const markHandled = () => sessionStorage.setItem(FLAG_KEY, '1');
 
     // Try immediately (for synchronously rendered banners)
     const handled = handleConsent(preference) || handleShadowDOM(preference);
@@ -352,10 +357,12 @@ if (!sessionStorage.getItem('gdpr_handler_done')) {
     // Watch for dynamically injected banners
     initObserver(preference);
 
-    // Re-check after short delays to catch late-loading banners
+    // Re-check after short delays to catch late-loading banners.
+    // Guard each timer with the session flag so they stop firing after
+    // the observer or an earlier timer already succeeded (S5).
     [500, 1500, 3000].forEach((delay) => {
       setTimeout(() => {
-        if (sessionStorage.getItem('gdpr_handler_done')) return;
+        if (sessionStorage.getItem(FLAG_KEY)) return;
         const success = handleConsent(preference) || handleShadowDOM(preference);
         if (success) markHandled();
       }, delay);

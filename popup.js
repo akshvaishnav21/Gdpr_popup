@@ -4,8 +4,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const radios = document.querySelectorAll('input[name="preference"]');
 
   // Load saved preference and pre-select the matching radio
+  const VALID_PREFS = ['reject_all', 'necessary_only', 'accept_all'];
   chrome.storage.sync.get('preference', (data) => {
-    const saved = data.preference || 'reject_all';
+    const saved = VALID_PREFS.includes(data.preference) ? data.preference : 'reject_all';
     const match = document.querySelector(`input[value="${saved}"]`);
     if (match) match.checked = true;
   });
